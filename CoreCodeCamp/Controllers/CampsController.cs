@@ -21,15 +21,27 @@ namespace CoreCodeCamp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCamps()
+        public async Task<ActionResult<CampModel[]>> GetCamps()
         {
             try
             {
                 var results = await campRepository.GetAllCampsAsync();
+                return mapper.Map<CampModel[]>(results);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Database Error");
+            }
+        }
 
-                CampModel[] models = mapper.Map<CampModel[]>(results);
-
-                return Ok(models);
+        [HttpGet("{moniker}")]
+        public async Task<ActionResult<CampModel>> Get(string moniker)
+        {
+            try
+            {
+                var result = await campRepository.GetCampAsync(moniker);
+                if (result == null) return NotFound();
+                return mapper.Map<CampModel>(result);
             }
             catch (Exception)
             {
