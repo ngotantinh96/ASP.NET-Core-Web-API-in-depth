@@ -1,10 +1,10 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 namespace CoreCodeCamp.Migrations
 {
-    public partial class initialdb : Migration
+    public partial class Initialdb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
