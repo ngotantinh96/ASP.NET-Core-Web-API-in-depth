@@ -1,6 +1,6 @@
-﻿namespace CoreCodeCamp.Data
+﻿namespace CoreCodeCamp.Models
 {
-    public class Speaker
+    public class SpeakerModel
     {
         public int SpeakerId { get; set; }
         public string FirstName { get; set; }
