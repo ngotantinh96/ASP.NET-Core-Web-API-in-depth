@@ -74,6 +74,12 @@ namespace CoreCodeCamp.Controllers
         {
             try
             {
+                var existing = await campRepository.GetCampAsync(model.Moniker);
+                if (existing != null)
+                {
+                    return BadRequest("Moniker in Use");
+                }
+
                 var location = linkGenerator.GetPathByAction("Get", "Camps", new { moniker = model.Moniker });
 
                 if (string.IsNullOrWhiteSpace(location))
@@ -89,7 +95,7 @@ namespace CoreCodeCamp.Controllers
                     return Created(location, mapper.Map<CampModel>(camp));
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Database Error");
             }
