@@ -112,9 +112,30 @@ namespace CoreCodeCamp.Controllers
 
                 mapper.Map(model, oldCamp);
 
+                await campRepository.SaveChangesAsync();
+                
+                    return mapper.Map<CampModel>(oldCamp);
+                
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Database Error");
+            }
+        }
+
+        [HttpDelete("{moniker}")]
+        public async Task<IActionResult> Delete(string moniker)
+        {
+            try
+            {
+                var oldCamp = await campRepository.GetCampAsync(moniker);
+                if (oldCamp == null) return NotFound($"Could not find camp with moniker: {moniker}");
+
+                campRepository.Delete(oldCamp);
+
                 if (await campRepository.SaveChangesAsync())
                 {
-                    return mapper.Map<CampModel>(oldCamp);
+                    return Ok();
                 }
             }
             catch (Exception)
