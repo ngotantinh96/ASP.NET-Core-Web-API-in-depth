@@ -44,6 +44,7 @@ namespace CoreCodeCamp.Controllers
             try
             {
                 var talk = await campRepository.GetTalkByMonikerAsync(moniker, id, true);
+                if (talk == null) return NotFound();
                 return mapper.Map<TalkModel>(talk);
             }
             catch (Exception)
