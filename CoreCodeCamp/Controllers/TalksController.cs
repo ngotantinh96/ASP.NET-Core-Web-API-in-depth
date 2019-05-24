@@ -82,5 +82,56 @@ namespace CoreCodeCamp.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Database Error");
             }
         }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<TalkModel>> Put(string moniker, int id, TalkModel model)
+        {
+            try
+            {
+                var oldTask = await campRepository.GetTalkByMonikerAsync(moniker, id, true);
+                if (oldTask == null) return NotFound($"Could not find camp with moniker: {moniker} and id: {id}");
+
+                mapper.Map(model, oldTask);
+
+                if (model.Speaker != null)
+                {
+                    var speaker = await campRepository.GetSpeakerAsync(model.Speaker.SpeakerId);
+                    if (speaker != null)
+                        oldTask.Speaker = speaker;
+                }
+
+                await campRepository.SaveChangesAsync();
+
+                return mapper.Map<TalkModel>(oldTask);
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Database Error");
+            }
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(string moniker, int id)
+        {
+            try
+            {
+                var oldTask = await campRepository.GetTalkByMonikerAsync(moniker, id);
+                if (oldTask == null) return NotFound($"Could not find camp with moniker: {moniker} and id: {id}");
+
+
+                campRepository.Delete(oldTask);
+
+                if (await campRepository.SaveChangesAsync())
+                {
+                    return Ok();
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Database Error");
+            }
+            return BadRequest();
+        }
     }
 }
