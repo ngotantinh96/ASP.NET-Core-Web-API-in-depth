@@ -29,7 +29,7 @@ namespace CoreCodeCamp.Controllers
         {
             try
             {
-                var talks = await campRepository.GetTalksByMonikerAsync(moniker);
+                var talks = await campRepository.GetTalksByMonikerAsync(moniker, true);
                 return mapper.Map<TalkModel[]>(talks);
             }
             catch (Exception)
@@ -43,8 +43,39 @@ namespace CoreCodeCamp.Controllers
         {
             try
             {
-                var talk = await campRepository.GetTalkByMonikerAsync(moniker, id);
+                var talk = await campRepository.GetTalkByMonikerAsync(moniker, id, true);
                 return mapper.Map<TalkModel>(talk);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Database Error");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<TalkModel>> Post(string moniker, TalkModel model)
+        {
+            try
+            {
+                var camp = await campRepository.GetCampAsync(moniker);
+                if (camp == null) return BadRequest("Camp does not exist");
+
+                //Create a new camp
+                var talk = mapper.Map<Talk>(model);
+                talk.Camp = camp;
+
+                if (model.Speaker == null) return BadRequest("Speaker Id is required");
+                var speaker = await campRepository.GetSpeakerAsync(model.Speaker.SpeakerId);
+                if (speaker == null) return BadRequest("Speaker could not be found");
+                talk.Speaker = speaker;
+
+                campRepository.Add(talk);
+                await campRepository.SaveChangesAsync();
+
+                var url = linkGenerator
+                    .GetPathByAction(HttpContext, "Get", values: new { moniker, id = talk.TalkId });
+
+                return Created(url, mapper.Map<TalkModel>(talk));
             }
             catch (Exception)
             {

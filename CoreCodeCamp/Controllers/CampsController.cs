@@ -84,7 +84,7 @@ namespace CoreCodeCamp.Controllers
 
                 if (string.IsNullOrWhiteSpace(location))
                 {
-                    return BadRequest("Could not user moniker!");
+                    return BadRequest("Could not use moniker!");
                 }
 
                 //Create a new camp
@@ -113,9 +113,9 @@ namespace CoreCodeCamp.Controllers
                 mapper.Map(model, oldCamp);
 
                 await campRepository.SaveChangesAsync();
-                
-                    return mapper.Map<CampModel>(oldCamp);
-                
+
+                return mapper.Map<CampModel>(oldCamp);
+
             }
             catch (Exception)
             {
