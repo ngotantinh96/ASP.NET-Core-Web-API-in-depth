@@ -3,6 +3,7 @@ using CoreCodeCamp.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CoreCodeCamp
@@ -26,6 +27,10 @@ namespace CoreCodeCamp
                 opt.AssumeDefaultVersionWhenUnspecified = true;
                 opt.DefaultApiVersion = new ApiVersion(1, 1);
                 opt.ReportApiVersions = true;
+                ///change api-verison to ver
+                //opt.ApiVersionReader = new QueryStringApiVersionReader("ver");
+                ///Verison with header
+                opt.ApiVersionReader = new HeaderApiVersionReader("X-Version");
             });
 
             services.AddMvc(opt => opt.EnableEndpointRouting = false)
